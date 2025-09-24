@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vitest/globals", "vitest/importMeta"],
+    "isolatedModules": true
+  },
+
+  "include": ["**/*.spec.ts", "**/*.spec.tsx"],
+  "exclude": []
+}

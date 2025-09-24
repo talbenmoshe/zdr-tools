@@ -1,0 +1,34 @@
+# Node modules
+node_modules
+
+# pnpm state
+.pnpm
+.pnpm-debug.log
+.npmrc
+
+# TypeScript
+*.tsbuildinfo
+dist
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Temporary files and folders
+temp
+tmp
+.cache
+
+# Ignore build outputs (if any)
+build
+dist
+
+# MacOS-specific
+.DS_Store
+
+# IDEs and editors
+.idea
+.vscode
+.vscode-test
