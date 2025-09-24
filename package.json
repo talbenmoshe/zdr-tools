@@ -1,0 +1,30 @@
+{
+  "name": "zdr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node \"packages/ddd-library-monorepo/dist/cjs/start.js\"",
+    "build": "pnpm -r --sort run build",
+    "lint": "pnpm -r --no-sort --parallel run lint",
+    "lint:fix": "pnpm -r --no-sort --parallel run lint:fix",
+    "test": "pnpm -r --no-sort run test"
+  },
+  "keywords": [],
+  "author": {
+    "name": "talbenmoshe",
+    "email": "tal.benm@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/talbenmoshe/zdr-tools/issues"
+  },
+  "homepage": "https://github.com/talbenmoshe/zdr-tools#readme",
+  "repository": "github:talbenmoshe/zdr-tools",
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "@zdr-tools/eslint-config-zdr": "workspace:*",
+    "eslint": "^9.27.0"
+  }
+}

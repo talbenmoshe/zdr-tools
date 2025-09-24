@@ -1,0 +1,1 @@
+import '@zdr-tools/zdr-vitest-setup';

@@ -1,0 +1,49 @@
+{
+  "name": "@zdr-tools/zdr-jest-setup",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": {
+    "name": "talbenmoshe",
+    "email": "tal.benm@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/talbenmoshe/zdr-tools/issues"
+  },
+  "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-jest-setup#readme",
+  "repository": "github:talbenmoshe/zdr-tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "sideEffects": true,
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc && tsc-esm-fix dist",
+    "test": "echo \"no tests for jest setup\"",
+    "lint": "pnpx eslint . --ext ts,js",
+    "lint:fix": "pnpx eslint . --fix --ext ts,js"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "pnpm lint"
+  },
+  "dependencies": {
+    "@zdr-tools/zdr-testing-tools": "workspace:*",
+    "tslib": "^2.8.1"
+  },
+  "peerDependencies": {
+    "jest": ">=27.0.0",
+    "@types/jest": ">=27.0.0"
+  },
+  "devDependencies": {
+    "tsc-esm-fix": "^3.1.2",
+    "@zdr-tools/eslint-config-zdr": "workspace:*",
+    "typescript": "~5.8.3",
+    "ts-jest": "^29.2.5"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "types": ["vitest/globals"]
+  },
+  "include": ["src", "fakes"],
+  "exclude": ["__tests__", "**/*.spec.ts", "**/*.spec.tsx", "dist", "node_modules"]
+}
