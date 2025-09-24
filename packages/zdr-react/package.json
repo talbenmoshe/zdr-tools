@@ -6,6 +6,7 @@
     "url": "https://github.com/talbenmoshe/zdr-tools/issues"
   },
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "author": {

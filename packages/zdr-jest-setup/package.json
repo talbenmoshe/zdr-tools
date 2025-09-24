@@ -2,6 +2,7 @@
   "name": "@zdr-tools/zdr-jest-setup",
   "version": "1.0.0",
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "author": {

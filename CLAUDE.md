@@ -146,7 +146,3 @@ All packages use:
 - TypeScript ~5.8.3
 - Strict type checking
 - Build output to `dist/` with `tsc-esm-fix` for ESM compatibility
-
-## Publishing
-
-Packages are configured to publish to a private registry at `https://talbenmoshe.synology.me:10001/verdaccio/`.
