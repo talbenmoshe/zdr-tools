@@ -91,6 +91,9 @@ export abstract class EntityCollectionBase<T extends IEntity>
     itemsToAdd.forEach(item => {
       this.attachItemEvents(item);
     });
+
+    this.onItemsAdded(itemsToAdd, options);
+
     this.itemsAdded.emit({ items: itemsToAdd });
     this.collectionChanged.emit(undefined);
 
@@ -98,6 +101,10 @@ export abstract class EntityCollectionBase<T extends IEntity>
   }
 
   abstract addItems(items: T[], options?: AddItemsOptions): void;
+
+  protected abstract onItemsAdded(itemsToAdd: T[], options?: AddItemsOptions): void;
+
+  protected abstract onItemRemoved(itemToRemove: T): void;
 
   isEmpty(): boolean {
     return this.items.length === 0;
@@ -110,6 +117,9 @@ export abstract class EntityCollectionBase<T extends IEntity>
     itemToRemove.propertyChanged.unRegister(this.handleItemPropertyChanged);
     itemToRemove.idChanged.unRegister(this.boundHandleIdChanged);
     this.items.splice(removedIndex, 1);
+
+    this.onItemRemoved(itemToRemove);
+
     this.itemRemoved.emit({ item: itemToRemove });
     this.collectionChanged.emit(undefined);
 
