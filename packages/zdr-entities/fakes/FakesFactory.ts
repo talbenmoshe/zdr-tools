@@ -4,6 +4,7 @@ import { FakeReadablePropEventBrokerBuilder } from './FakeReadablePropEventBroke
 import { FakeRestorablePropEventBrokerBuilder } from './FakeRestorablePropEventBroker';
 import { FakeEntityCollectionBuilder } from './FakeEntityCollection';
 import { FakeOrderedEntityCollectionBuilder } from './FakeOrderedEntityCollection';
+import { FakeEntityBuilder } from './FakeEntity';
 import type { IEntity } from '../src/interfaces';
 
 export class FakesFactory {
@@ -53,5 +54,13 @@ export class FakesFactory {
 
   static createOrderedEntityCollection<T extends IEntity>() {
     return this.createOrderedEntityCollectionBuilder<T>().build();
+  }
+
+  static createEntityBuilder() {
+    return new FakeEntityBuilder();
+  }
+
+  static createEntity() {
+    return this.createEntityBuilder().build();
   }
 }

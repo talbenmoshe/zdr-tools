@@ -23,10 +23,6 @@ export class OrderedEntityCollection<T extends IEntity>
       'order',
       items?.map(item => item.getId())
     );
-
-    this.order.register(() => {
-      this.collectionChanged.emit(undefined);
-    });
   }
 
   getPagedItems(page: Paging): T[] {
@@ -63,19 +59,21 @@ export class OrderedEntityCollection<T extends IEntity>
 
   addItems(items: T[], options?: OrderedAddItemsOptions): void {
     if (items.length) {
-      const insertStartIndex = options?.startIndex ?? this.getOrder().length;
-      const itemsToAdd = this.addBase(items, options);
+      this.addBase(items, options);
+    }
+  }
 
-      if (itemsToAdd.length > 0) {
-        const itemsOrder = itemsToAdd.map(item => item.getId());
-        const newOrder = insertAt(
-          this.getOrder(),
-          insertStartIndex,
-          ...itemsOrder
-        );
+  protected onItemsAdded(itemsToAdd: T[], options?: OrderedAddItemsOptions): void {
+    if (itemsToAdd.length > 0) {
+      const startIndex = options?.startIndex ?? this.getOrder().length;
+      const itemsOrder = itemsToAdd.map(item => item.getId());
+      const newOrder = insertAt(
+        this.getOrder(),
+        startIndex,
+        ...itemsOrder
+      );
 
-        this.order.set(newOrder);
-      }
+      this.order.set(newOrder);
     }
   }
 
@@ -84,6 +82,7 @@ export class OrderedEntityCollection<T extends IEntity>
     const currentIndex = currentOrder?.findIndex(item => item === itemId);
     const newOrder = move(currentOrder, currentIndex, newIndex);
     this.order.set(newOrder);
+    this.collectionChanged.emit(undefined);
   }
 
   private getOrder(): string[] {
@@ -98,15 +97,13 @@ export class OrderedEntityCollection<T extends IEntity>
     const sortedItems = this.getItems().sort(compareFn);
     const newOrder = sortedItems.map(item => item.getId());
     this.order.set(newOrder);
+    this.collectionChanged.emit(undefined);
   }
 
-  removeItem(id: string): T {
-    const itemToRemove = super.removeItem(id);
+  protected onItemRemoved(itemToRemove: T): void {
     const currentItemsOrder = this.getOrder();
-    const newOrder = currentItemsOrder.filter(itemId => itemId !== id);
+    const newOrder = currentItemsOrder.filter(itemId => itemId !== itemToRemove.getId());
     this.order.set(newOrder);
-
-    return itemToRemove;
   }
 
   protected onItemIdChanged(data: IdChangedEventData): void {

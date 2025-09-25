@@ -19,4 +19,12 @@ export class EntityCollection<T extends IEntity>
   getItems(): T[] {
     return this.items;
   }
+
+  protected onItemsAdded(_itemsToAdd: T[]): void {
+    // Default implementation does nothing for non-ordered collections
+  }
+
+  protected onItemRemoved(_itemToRemove: T): void {
+    // Default implementation does nothing for non-ordered collections
+  }
 }
