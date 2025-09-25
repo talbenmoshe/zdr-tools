@@ -19,13 +19,13 @@ export interface IFakeEntityCollectionBaseInitialData<
   T extends IEntity
 > extends IFakeEntityInitialData {
   getItemValue: T | undefined;
-  anyItems: T[];
+  getItemsValue: T[];
   removeItemValue: T;
   isEmptyValue: boolean;
 
   // Optional for specific items testing
-  getNewItemsValue?: T[];
-  getOldItemsValue?: T[];
+  getNewItemsValue: T[];
+  getOldItemsValue: T[];
 }
 
 export abstract class FakeEntityCollectionBase<T extends IEntity>
@@ -49,20 +49,17 @@ export abstract class FakeEntityCollectionBase<T extends IEntity>
   );
   getNewItems = getMockingFunction<() => T[]>(
     () =>
-      this.collectionInitialData.getNewItemsValue ??
-      this.collectionInitialData.anyItems
+      this.collectionInitialData.getNewItemsValue
   );
   addItems = getMockingFunction<(items: T[], options?: AddItemsOptions) => void>();
   removeItem = getMockingFunction<(id: string) => T>(
     () => this.collectionInitialData.removeItemValue
   );
-  getItems = getMockingFunction<() => T[]>(
-    () => this.collectionInitialData.anyItems
-  );
+  abstract getItems(): T[];
+
   getOldItems = getMockingFunction<() => T[]>(
     () =>
-      this.collectionInitialData.getOldItemsValue ??
-      this.collectionInitialData.anyItems
+      this.collectionInitialData.getOldItemsValue
   );
   isEmpty = getMockingFunction<() => boolean>(() => this.collectionInitialData.isEmptyValue);
   removeAllItems = getMockingFunction<() => void>();
@@ -73,7 +70,7 @@ export abstract class FakeEntityCollectionBaseBuilder<
   T extends IEntity
 > extends FakeEntityBuilder {
   protected getItemValue: T | undefined;
-  protected anyItems: T[] = [];
+  protected getItemsValue: T[] = [];
   protected getNewItemsValue: T[] = [];
   protected getOldItemsValue: T[] = [];
   // @ts-ignore
@@ -86,8 +83,8 @@ export abstract class FakeEntityCollectionBaseBuilder<
     return this;
   }
 
-  withAnyItems(anyItems: T[]): this {
-    this.anyItems = anyItems;
+  withGetItems(getItems: T[]): this {
+    this.getItemsValue = getItems;
 
     return this;
   }
@@ -120,7 +117,7 @@ export abstract class FakeEntityCollectionBaseBuilder<
     return {
       ...this.getInitialData(),
       getItemValue: this.getItemValue,
-      anyItems: this.anyItems,
+      getItemsValue: this.getItemsValue,
       removeItemValue: this.removeItemValue,
       isEmptyValue: this.isEmptyValue,
       getNewItemsValue: this.getNewItemsValue,
