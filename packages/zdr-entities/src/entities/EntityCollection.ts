@@ -17,7 +17,7 @@ export class EntityCollection<T extends IEntity>
   }
 
   getItems(): T[] {
-    return this.items;
+    return [...this.items];
   }
 
   protected onItemsAdded(_itemsToAdd: T[]): void {

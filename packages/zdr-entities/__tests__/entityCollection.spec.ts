@@ -36,4 +36,19 @@ describe('EntityCollection', () => {
     expect(collection.getNewItems()).toEqual([]);
     expect(collection.getOldItems()).toEqual([]);
   });
+
+  it('should return a clone of items array', () => {
+    const collection = new EntityCollection<FakeEntity>('myName', []);
+    const entityId = 'entity-1';
+    const entity1 = new FakeEntityBuilder().withId(entityId).build();
+    const entity2 = new FakeEntityBuilder().build();
+
+    collection.addItems([entity1, entity2]);
+    const itemsBeforeRemove = collection.getItems();
+
+    collection.removeItem(entityId);
+
+    expect(itemsBeforeRemove).toEqual([entity1, entity2]);
+    expect(collection.getItems()).toEqual([entity2]);
+  });
 });
