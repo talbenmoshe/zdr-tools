@@ -1,6 +1,6 @@
-import { EventEmitter } from 'eventemitter3';
+import pkg from 'eventemitter3';
 
-export class AdvancedEventEmitter extends EventEmitter {
+export class AdvancedEventEmitter extends pkg.EventEmitter {
   emit<T extends string | symbol>(event: T, ...args: any[]): boolean {
     let value: boolean = false;
 
