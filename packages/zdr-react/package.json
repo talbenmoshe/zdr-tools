@@ -14,6 +14,8 @@
     "email": "tal.benm@gmail.com"
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-react#readme",
+  "repository": "github:talbenmoshe/zdr-tools",
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "sideEffects": false,
