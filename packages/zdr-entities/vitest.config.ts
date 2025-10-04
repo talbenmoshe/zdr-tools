@@ -5,8 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['__tests__/**/*.spec.ts', '__tests__/**/*.spec.tsx'],
-    setupFiles: ['__tests__/setup.ts'],
-    typecheck: { tsconfig: '__tests__/tsconfig.json' },
+    setupFiles: ['@zdr-tools/zdr-vitest-setup'],
     coverage: { provider: 'v8' }
   }
 });

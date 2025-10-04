@@ -1,4 +1,4 @@
-import { IPropEventBroker, IPropEventBrokerOptions, IReadablePropEventBroker, IRestorablePropEventBroker } from '../src/interfaces';
+import type { IPropEventBroker, IPropEventBrokerOptions, IReadablePropEventBroker, IRestorablePropEventBroker } from '../src/interfaces';
 import { RestorablePropEventBroker, PropEventBroker } from '../src/EventBrokers';
 import { ReadablePropEventBroker } from '../src/EventBrokers/ReadablePropEventBroker';
 import { vi } from 'vitest';

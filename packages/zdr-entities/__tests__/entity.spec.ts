@@ -1,4 +1,4 @@
-import { IOrderedEntityCollection, IPropEventBroker } from '../src/interfaces';
+import type { IOrderedEntityCollection, IPropEventBroker } from '../src/interfaces';
 import { Entity } from '../src/entities';
 import { vi, describe, it, expect } from 'vitest';
 import { aRandomInteger, aRandomString } from '@zdr-tools/zdr-native-tools';

@@ -5,7 +5,6 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['__tests__/**/*.spec.ts', '__tests__/**/*.spec.tsx'],
-    typecheck: { tsconfig: '__tests__/tsconfig.json' },
     coverage: { provider: 'v8' }
   }
 });

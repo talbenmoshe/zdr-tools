@@ -49,6 +49,7 @@
     "@types/wait-on": "^5.3.4",
     "@vitest/coverage-v8": "^3.1.4",
     "@zdr-tools/eslint-config-zdr": "workspace:*",
+    "@zdr-tools/typescript-config-common": "workspace:*",
     "tsc-esm-fix": "^3.1.2",
     "typescript": "~5.8.3",
     "vitest": "^3.1.4"

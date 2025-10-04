@@ -1,0 +1,29 @@
+{
+  "name": "@zdr-tools/typescript-config-common",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": {
+    "name": "talbenmoshe",
+    "email": "tal.benm@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/talbenmoshe/zdr-tools/issues"
+  },
+  "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/typescript-config-common#readme",
+  "repository": "github:talbenmoshe/zdr-tools",
+  "type": "module",
+  "files": [
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "build": "echo 'No build needed for typescript-config-common'",
+    "test": "echo 'No tests for typescript-config-common'",
+    "test:watch": "echo 'No tests for typescript-config-common'",
+    "lint": "echo 'No linting for typescript-config-common'",
+    "lint:fix": "echo 'No linting for typescript-config-common'"
+  }
+}

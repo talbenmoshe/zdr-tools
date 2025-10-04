@@ -1,9 +1,9 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "@zdr-tools/typescript-config-common/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
     "types": ["vitest/globals"]
   },
   "include": ["src"], // Only source files
-  "exclude": ["__tests__", "**/*.spec.ts", "**/*.spec.tsx"]
+  "exclude": ["**/*.spec.ts", "**/*.spec.tsx"]
 }
