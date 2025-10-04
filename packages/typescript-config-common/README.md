@@ -6,6 +6,7 @@ Shared TypeScript configuration for all ZDR Tools packages.
 
 In your package's `tsconfig.json`:
 
+
 ```json
 {
   "extends": "@zdr-tools/typescript-config-common/tsconfig.json",

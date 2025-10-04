@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-native-web#readme",
   "repository": "github:talbenmoshe/zdr-tools",
+  "type": "module",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
   "sideEffects": false,
