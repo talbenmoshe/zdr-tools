@@ -15,23 +15,23 @@
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-native-tools#readme",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
   "sideEffects": false,
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "dist"
+    "dist/src"
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
     },
     "./test": {
-      "import": "./dist/testIndex.js",
-      "require": "./dist/testIndex.js",
-      "types": "./dist/testIndex.d.ts"
+      "import": "./dist/src/testIndex.js",
+      "require": "./dist/src/testIndex.js",
+      "types": "./dist/src/testIndex.d.ts"
     }
   },
   "scripts": {
@@ -56,6 +56,7 @@
     "@types/color-convert": "^2.0.4",
     "tsc-esm-fix": "^3.1.2",
     "@zdr-tools/eslint-config-zdr": "workspace:*",
+    "@zdr-tools/typescript-config-common": "workspace:*",
     "typescript": "~5.8.3",
     "vitest": "3.1.4"
   },

@@ -21,8 +21,15 @@
   "sideEffects": false,
   "types": "dist/src/index.d.ts",
   "files": [
-    "dist"
+    "dist/src"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "echo \"no tests for base testing tools\"",
@@ -38,6 +45,7 @@
   "devDependencies": {
     "tsc-esm-fix": "^3.1.2",
     "@zdr-tools/eslint-config-zdr": "workspace:*",
+    "@zdr-tools/typescript-config-common": "workspace:*",
     "typescript": "~5.8.3"
   }
 }

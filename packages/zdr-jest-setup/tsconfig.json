@@ -1,11 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "@zdr-tools/typescript-config-common/tsconfig.json",
   "compilerOptions": {
+    "rootDir": ".",
     "outDir": "./dist"
   },
   "include": ["src"],
-  "exclude": ["dist", "node_modules"],
-  "references": [
-    { "path": "../zdr-testing-tools" }
-  ]
+  "exclude": ["dist", "node_modules"]
 }
