@@ -2,6 +2,7 @@
   "extends": "@zdr-tools/typescript-config-common/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": ".",
     "types": ["vitest/globals"]
   },
   "include": ["src"], // Only source files
