@@ -2,9 +2,9 @@
   "name": "@zdr-tools/zdr-monorepo",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "sideEffects": false,
-  "types": "dist/types/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "bin": "./bin/zdr-monorepo.js",
   "type": "module",
   "files": [
@@ -17,7 +17,7 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/src/index.js"
     }
   },
   "scripts": {

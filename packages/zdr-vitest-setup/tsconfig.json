@@ -1,6 +1,7 @@
 {
   "extends": "@zdr-tools/typescript-config-common/tsconfig.json",
   "compilerOptions": {
+    "rootDir": ".",
     "outDir": "./dist"
   },
   "include": ["src"],

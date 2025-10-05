@@ -16,10 +16,10 @@
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-jest-setup#readme",
   "repository": "github:talbenmoshe/zdr-tools",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
   "sideEffects": true,
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
     "dist"
   ],
