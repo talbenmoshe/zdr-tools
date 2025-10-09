@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
-    "jsx": "react-jsx",
+    "jsx": "react",
     "lib": ["ESNext", "DOM"],
     "incremental": false
   }
