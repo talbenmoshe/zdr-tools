@@ -64,7 +64,7 @@ async function handleSequence(sequence: string[], timeout: number, entries: stri
 
   const files = sequence.filter(file => {
     return !entries.includes(file);
-  }).map(pkg => path.join(pkg, '/dist/index.js'));
+  }).map(pkg => path.join(pkg, '/dist/src/index.js'));
 
   files.forEach(file => {
     if (fs.existsSync(file)) {
@@ -90,10 +90,10 @@ export async function start({ entries, timeout: timeoutString }: StartOptions) {
   const entriesArray = entries.trim().split(' ');
   console.log(chalk.blue.bold(`Starting ${entriesArray} with dependencies`));
   const timeout = parseInt(timeoutString);
-  const dependencYResults = JSON.parse(execSync('pnpm list --recursive --depth Infinity --json --long --only-projects', { cwd: process.cwd() })
+  const dependencyResults = JSON.parse(execSync('pnpm list --recursive --depth Infinity --json --long --only-projects', { cwd: process.cwd() })
     .toString()) as IDependencyResult[];
 
-  const dependencies = dependencYResults.map(dependency => {
+  const dependencies = dependencyResults.map(dependency => {
     return {
       name: dependency.name,
       path: dependency.path
