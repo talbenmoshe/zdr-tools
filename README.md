@@ -62,9 +62,8 @@ This monorepo contains the following packages organized by functionality:
 
 | Package | Description | Documentation |
 |---------|-------------|---------------|
-| [`zdr-interfaces`](./packages/zdr-interfaces/README.md) | Core TypeScript interfaces and types for the entire framework | [📖 Docs](./packages/zdr-interfaces/README.md) |
 | [`zdr-native-tools`](./packages/zdr-native-tools/README.md) | Framework-agnostic utilities (ID generation, array tools, event emitters) | [📖 Docs](./packages/zdr-native-tools/README.md) |
-| [`zdr-entities`](./packages/zdr-entities/README.md) | Entity framework implementation with reactive properties and collections | [📖 Docs](./packages/zdr-entities/README.md) |
+| [`zdr-entities`](./packages/zdr-entities/README.md) | Entity framework implementation with reactive properties, collections, and core interfaces | [📖 Docs](./packages/zdr-entities/README.md) |
 
 ### Platform-Specific Packages
 
@@ -135,13 +134,10 @@ The ZDR framework follows a layered architecture:
 │     (zdr-react, zdr-web-tools)          │
 ├─────────────────────────────────────────┤
 │           Entity Layer                  │
-│          (zdr-entities)                 │
+│   (zdr-entities - includes interfaces)  │
 ├─────────────────────────────────────────┤
 │           Utilities Layer               │
 │        (zdr-native-tools)               │
-├─────────────────────────────────────────┤
-│           Interfaces Layer              │
-│         (zdr-interfaces)                │
 └─────────────────────────────────────────┘
 ```
 
