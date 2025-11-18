@@ -36,7 +36,7 @@ export class FakeOrderedEntityCollection<T extends IEntity>
     () =>
       this.orderedCollectionInitialData.getItemsValue
   );
-  addItems = getMockingFunction<(items: T[], options?: OrderedAddItemsOptions) => void>();
+  addItems = getMockingFunction<(items: T[], options?: OrderedAddItemsOptions<T>) => void>();
   moveItem = getMockingFunction<(itemId: string, newIndex: number) => void>();
   getItemAt = getMockingFunction<(index: number) => T | undefined>(
     () => this.orderedCollectionInitialData.getItemValue

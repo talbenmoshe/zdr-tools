@@ -537,7 +537,7 @@ console.log(complexUrl.getHost()); // 'user:pass@example.com:8080'
 
 This package integrates seamlessly with the ZDR ecosystem:
 
-- **Implements** URL interfaces from `@zdr-tools/zdr-interfaces`
+- **Implements** URL interfaces from `@zdr-tools/zdr-entities`
 - **Uses** event brokers from `@zdr-tools/zdr-entities`
 - **Provides** web-specific reactive services for browser environments
 - **Supports** reactive patterns for web applications

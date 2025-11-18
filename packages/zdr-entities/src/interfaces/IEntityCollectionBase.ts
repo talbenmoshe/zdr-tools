@@ -13,8 +13,19 @@ export interface IItemIdChangedEventData<T> extends IItemEventData<T> {
   data: IdChangedEventData;
 }
 
-export interface AddItemsOptions {
+export type CollisionStrategyCallback<T extends IEntity> = (
+  existingItem: T,
+  newItem: T
+) => T;
+
+export interface AddItemsOptions<T extends IEntity = IEntity> {
+  /**
+   * @deprecated Use `collisionStrategy: 'keep'` instead. This property is maintained for backward compatibility.
+   * - `keepExistingItems: true` is equivalent to `collisionStrategy: 'keep'`
+   * - `keepExistingItems: false` is equivalent to `collisionStrategy: 'throw'`
+   */
   keepExistingItems?: boolean;
+  collisionStrategy?: 'throw' | 'replace' | 'keep' | CollisionStrategyCallback<T>;
 }
 
 export interface IEntityCollectionBase<T extends IEntity> extends IEntity {
@@ -28,8 +39,8 @@ export interface IEntityCollectionBase<T extends IEntity> extends IEntity {
   getItems(): T[];
   getNewItems(): T[];
   getOldItems(): T[];
-  addItems(items: T[], options?: AddItemsOptions): void;
-  removeItem(id: string): T;
+  addItems(items: T[], options?: AddItemsOptions<T>): void;
+  removeItem(id: string): T | undefined;
   isEmpty(): boolean;
   removeAllItems(): void;
   replaceAllItems(items: T[]): void;

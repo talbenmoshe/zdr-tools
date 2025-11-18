@@ -12,7 +12,7 @@ export class EntityCollection<T extends IEntity>
     super(name, items);
   }
 
-  addItems(items: T[], options?: AddItemsOptions): void {
+  addItems(items: T[], options?: AddItemsOptions<T>): void {
     this.addBase(items, options);
   }
 
@@ -20,7 +20,7 @@ export class EntityCollection<T extends IEntity>
     return [...this.items];
   }
 
-  protected onItemsAdded(_itemsToAdd: T[]): void {
+  protected onItemsAdded(_itemsToAdd: T[], _options?: AddItemsOptions<T>): void {
     // Default implementation does nothing for non-ordered collections
   }
 

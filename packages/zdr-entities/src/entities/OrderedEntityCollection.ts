@@ -57,13 +57,13 @@ export class OrderedEntityCollection<T extends IEntity>
     return this.getItem(itemId);
   }
 
-  addItems(items: T[], options?: OrderedAddItemsOptions): void {
+  addItems(items: T[], options?: OrderedAddItemsOptions<T>): void {
     if (items.length) {
       this.addBase(items, options);
     }
   }
 
-  protected onItemsAdded(itemsToAdd: T[], options?: OrderedAddItemsOptions): void {
+  protected onItemsAdded(itemsToAdd: T[], options?: OrderedAddItemsOptions<T>): void {
     if (itemsToAdd.length > 0) {
       const startIndex = options?.startIndex ?? this.getOrder().length;
       const itemsOrder = itemsToAdd.map(item => item.getId());
