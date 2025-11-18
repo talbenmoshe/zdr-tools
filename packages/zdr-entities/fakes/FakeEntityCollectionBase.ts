@@ -20,7 +20,7 @@ export interface IFakeEntityCollectionBaseInitialData<
 > extends IFakeEntityInitialData {
   getItemValue: T | undefined;
   getItemsValue: T[];
-  removeItemValue: T;
+  removeItemValue: T | undefined;
   isEmptyValue: boolean;
 
   // Optional for specific items testing
@@ -51,8 +51,8 @@ export abstract class FakeEntityCollectionBase<T extends IEntity>
     () =>
       this.collectionInitialData.getNewItemsValue
   );
-  addItems = getMockingFunction<(items: T[], options?: AddItemsOptions) => void>();
-  removeItem = getMockingFunction<(id: string) => T>(
+  addItems = getMockingFunction<(items: T[], options?: AddItemsOptions<T>) => void>();
+  removeItem = getMockingFunction<(id: string) => T | undefined>(
     () => this.collectionInitialData.removeItemValue
   );
   abstract getItems(): T[];
@@ -73,8 +73,7 @@ export abstract class FakeEntityCollectionBaseBuilder<
   protected getItemsValue: T[] = [];
   protected getNewItemsValue: T[] = [];
   protected getOldItemsValue: T[] = [];
-  // @ts-ignore
-  protected removeItemValue: T;
+  protected removeItemValue: T | undefined;
   protected isEmptyValue: boolean = false;
 
   withGetItemValue(getItemValue: T | undefined): this {
@@ -101,7 +100,7 @@ export abstract class FakeEntityCollectionBaseBuilder<
     return this;
   }
 
-  withRemoveItemValue(removeItemValue: T): this {
+  withRemoveItemValue(removeItemValue: T | undefined): this {
     this.removeItemValue = removeItemValue;
 
     return this;

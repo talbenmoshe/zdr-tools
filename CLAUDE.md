@@ -146,3 +146,61 @@ All packages use:
 - TypeScript ~5.8.3
 - Strict type checking
 - Build output to `dist/` with `tsc-esm-fix` for ESM compatibility
+
+## Coding Style Guidelines
+
+### Single Return Statement Rule
+**All methods and functions MUST have exactly one return statement.**
+
+This rule improves code readability and maintainability by:
+- Making control flow easier to follow
+- Reducing cognitive load when reading code
+- Preventing early returns that can hide logic
+
+**Examples:**
+
+❌ **Bad** - Multiple return statements:
+```typescript
+function getValue(id: string): string | undefined {
+  const item = this.items.find(i => i.id === id);
+  if (!item) {
+    return undefined;
+  }
+  return item.value;
+}
+```
+
+✅ **Good** - Single return statement:
+```typescript
+function getValue(id: string): string | undefined {
+  const item = this.items.find(i => i.id === id);
+  const result = item ? item.value : undefined;
+
+  return result;
+}
+```
+
+❌ **Bad** - Early returns in loops:
+```typescript
+function hasItem(id: string): boolean {
+  for (const item of this.items) {
+    if (item.id === id) {
+      return true;
+    }
+  }
+  return false;
+}
+```
+
+✅ **Good** - Single return with appropriate logic:
+```typescript
+function hasItem(id: string): boolean {
+  const found = this.items.some(item => item.id === id);
+
+  return found;
+}
+```
+
+**Exceptions:**
+- Guard clauses at the beginning of a function may be acceptable if they improve readability significantly and the function is complex
+- Type guards and assertion functions that TypeScript requires for type narrowing

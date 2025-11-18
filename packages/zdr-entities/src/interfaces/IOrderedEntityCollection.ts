@@ -3,7 +3,7 @@ import type { Paging } from './Paging';
 import type { IEntity } from './IEntity';
 import type { IEntityCollectionBase, AddItemsOptions } from './IEntityCollectionBase';
 
-export interface OrderedAddItemsOptions extends AddItemsOptions {
+export interface OrderedAddItemsOptions<T extends IEntity = IEntity> extends AddItemsOptions<T> {
   startIndex?: number;
 }
 
@@ -14,6 +14,6 @@ export interface IOrderedEntityCollection<T extends IEntity> extends IEntityColl
   getItemAt(index: number): T | undefined;
   getItemOrderIndex(itemId: string): number;
   getPagedItems(page: Paging): T[];
-  addItems(items: T[], options?: OrderedAddItemsOptions): void;
+  addItems(items: T[], options?: OrderedAddItemsOptions<T>): void;
   sort(compareFn: (a: T, b: T) => number): void;
 }
