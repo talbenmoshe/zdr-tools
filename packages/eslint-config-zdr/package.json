@@ -28,6 +28,10 @@
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/eslint-config-zdr#readme",
   "description": "",
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.eslint-config-zdr",
+    "targets": []
+  },
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",

@@ -30,6 +30,10 @@
       "types": "./dist/src/index.d.ts"
     }
   },
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.zdr-native-web",
+    "targets": []
+  },
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "vitest --run",

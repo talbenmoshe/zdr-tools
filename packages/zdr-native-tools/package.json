@@ -34,6 +34,10 @@
       "types": "./dist/src/testIndex.d.ts"
     }
   },
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.zdr-native-tools",
+    "targets": []
+  },
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "vitest --run",

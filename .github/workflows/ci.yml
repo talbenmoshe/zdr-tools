@@ -1,0 +1,22 @@
+name: Hephaestus
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - 'release/**'
+
+jobs:
+  build:
+    uses: talbenmoshe/common-infra/.github/workflows/ci.yml@master
+    permissions:
+      checks: write
+      contents: read
+      id-token: write
+      pull-requests: read
+    with:
+      log_level: DEBUG
+      package_registry_link_template: 'https://www.npmjs.com/package/{packageName}'
+    secrets:
+      PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}

@@ -43,6 +43,10 @@
       ]
     }
   },
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.zdr-entities",
+    "targets": []
+  },
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "vitest --run",

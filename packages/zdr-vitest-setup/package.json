@@ -23,6 +23,10 @@
   "files": [
     "dist"
   ],
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.zdr-vitest-setup",
+    "targets": []
+  },
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "echo \"no tests for vitest setup\"",

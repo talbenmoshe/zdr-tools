@@ -19,6 +19,10 @@
   "files": [
     "tsconfig.json"
   ],
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.typescript-config-common",
+    "targets": []
+  },
   "scripts": {
     "build": "echo 'No build needed for typescript-config-common'",
     "test": "echo 'No tests for typescript-config-common'",

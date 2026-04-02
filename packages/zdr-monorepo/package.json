@@ -20,6 +20,10 @@
       "import": "./dist/src/index.js"
     }
   },
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.zdr-monorepo",
+    "targets": []
+  },
   "scripts": {
     "start": "tsc -w --incremental",
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
