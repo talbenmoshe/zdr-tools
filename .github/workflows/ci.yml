@@ -16,38 +16,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/heads/release/') }}
 
 jobs:
-  fork-pr-verify:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint Fix
-        run: pnpm lint:fix
-
-      - name: Build
-        run: pnpm build
-
-      - name: Test
-        run: pnpm test
-
   ci:
-    if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -67,20 +36,45 @@ jobs:
           node-version: '24'
           cache: 'pnpm'
 
+      - name: Install dependencies
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint Fix
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
+        run: pnpm lint:fix
+
+      - name: Build
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
+        run: pnpm build
+
+      - name: Test
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
+        run: pnpm test
+
       - name: Configure npm auth
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         env:
           PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+          NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
         run: |
           cat <<EOF > ~/.npmrc
           @talbenmoshe:registry=https://npm.pkg.github.com
           //npm.pkg.github.com/:_authToken=${PACKAGES_TOKEN}
           always-auth=true
           EOF
+          if [ -n "${NPMJS_TOKEN}" ]; then
+            cat <<EOF >> ~/.npmrc
+          //registry.npmjs.org/:_authToken=${NPMJS_TOKEN}
+          EOF
+          fi
 
       - name: Enable npm provenance
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         run: echo "NPM_CONFIG_PROVENANCE=true" >> "$GITHUB_ENV"
 
       - name: GHCR login
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -88,17 +82,21 @@ jobs:
           password: ${{ secrets.PACKAGES_TOKEN }}
 
       - name: Install dependencies
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         run: pnpm install --frozen-lockfile
 
       - name: Security audit
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         run: pnpm audit --audit-level=critical --prod || echo "Vulnerabilities found, continuing"
 
       - name: Get origin info
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         id: origin-info
         run: |
           echo "last_commit_hash=$(git ls-remote --symref origin HEAD | tail -1 | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Resolve commit metadata
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         id: commit-info
         run: |
           COMMIT_MESSAGE=$(jq -r '.head_commit.message // empty' "$GITHUB_EVENT_PATH")
@@ -119,6 +117,7 @@ jobs:
           echo "commit_url=$COMMIT_URL" >> $GITHUB_OUTPUT
 
       - name: Resolve lineage
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         id: lineage
         uses: actions/github-script@v7
         with:
@@ -247,6 +246,7 @@ jobs:
           COMMIT_URL: ${{ steps.commit-info.outputs.commit_url }}
 
       - name: Build context
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         run: |
           echo "ref:                ${{ github.ref }}"
           echo "ref_name:           ${{ github.ref_name }}"
@@ -270,6 +270,7 @@ jobs:
           echo "connected_sha:      ${{ steps.lineage.outputs.connected_commit_sha }}"
 
       - name: Get Zeus webhook token
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         id: zeus-token
         run: |
           TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
@@ -277,6 +278,7 @@ jobs:
           echo "token=$TOKEN" >> $GITHUB_OUTPUT
 
       - name: Build or Publish
+        if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         run: |
           COMMAND=${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/')) && 'publish' || 'build' }}
           IS_PRIMARY=${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/') }}
@@ -342,7 +344,7 @@ jobs:
           AWS_REGION: eu-west-1
 
       - name: Upload Hephaestus report
-        if: always()
+        if: always() && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork)
         uses: actions/upload-artifact@v4
         with:
           name: hephaestus-report-${{ github.run_id }}
@@ -350,8 +352,8 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish test results
+        if: always() && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork)
         uses: dorny/test-reporter@v1
-        if: always()
         with:
           name: Test Results
           path: 'packages/*/junit*.xml'
