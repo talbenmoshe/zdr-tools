@@ -37,8 +37,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "echo \"no tests for base testing tools\"",
-    "lint": "pnpx eslint . --ext ts,js",
-    "lint:fix": "pnpx eslint . --fix --ext ts,js"
+    "lint": "eslint . --ext ts,js",
+    "lint:fix": "eslint . --fix --ext ts,js"
   },
   "lint-staged": {
     "*.{js,ts}": "pnpm lint"

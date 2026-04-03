@@ -29,8 +29,8 @@
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "lint": "pnpx eslint . --ext ts,js",
-    "lint:fix": "pnpx eslint . --fix --ext ts,js"
+    "lint": "eslint . --ext ts,js",
+    "lint:fix": "eslint . --fix --ext ts,js"
   },
   "lint-staged": {
     "*.{js,ts}": "pnpm lint"
