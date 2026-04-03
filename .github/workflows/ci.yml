@@ -25,13 +25,13 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       - name: Setup Node 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -75,7 +75,7 @@ jobs:
 
       - name: GHCR login
         if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -119,7 +119,7 @@ jobs:
       - name: Resolve lineage
         if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
         id: lineage
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
@@ -345,7 +345,7 @@ jobs:
 
       - name: Upload Hephaestus report
         if: always() && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: hephaestus-report-${{ github.run_id }}
           path: hephaestus-reports/hephaestus.html
@@ -353,7 +353,7 @@ jobs:
 
       - name: Publish test results
         if: always() && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork)
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         with:
           name: Test Results
           path: 'packages/*/junit*.xml'
