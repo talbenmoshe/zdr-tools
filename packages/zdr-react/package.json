@@ -14,7 +14,10 @@
     "email": "tal.benm@gmail.com"
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-react#readme",
-  "repository": "github:talbenmoshe/zdr-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talbenmoshe/zdr-tools"
+  },
   "type": "module",
   "main": "dist/src/index.js",
   "module": "dist/src/index.js",
@@ -38,8 +41,8 @@
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "lint": "pnpx eslint . --ext ts,js",
-    "lint:fix": "pnpx eslint . --fix --ext ts,js"
+    "lint": "eslint . --ext ts,js",
+    "lint:fix": "eslint . --fix --ext ts,js"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "pnpm lint"

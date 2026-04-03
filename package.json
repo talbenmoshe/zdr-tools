@@ -21,7 +21,10 @@
     "url": "https://github.com/talbenmoshe/zdr-tools/issues"
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools#readme",
-  "repository": "github:talbenmoshe/zdr-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talbenmoshe/zdr-tools"
+  },
   "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "@zdr-tools/eslint-config-zdr": "workspace:*",

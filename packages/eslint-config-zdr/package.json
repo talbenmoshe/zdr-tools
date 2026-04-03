@@ -17,7 +17,10 @@
     "lint": ":",
     "lint:fix": ":"
   },
-  "repository": "github:talbenmoshe/zdr-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talbenmoshe/zdr-tools"
+  },
   "author": {
     "name": "talbenmoshe",
     "email": "tal.benm@gmail.com"

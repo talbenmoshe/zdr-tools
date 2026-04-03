@@ -14,7 +14,10 @@
     "url": "https://github.com/talbenmoshe/zdr-tools/issues"
   },
   "homepage": "https://github.com/talbenmoshe/zdr-tools/tree/master/packages/typescript-config-common#readme",
-  "repository": "github:talbenmoshe/zdr-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talbenmoshe/zdr-tools"
+  },
   "type": "module",
   "files": [
     "tsconfig.json"
