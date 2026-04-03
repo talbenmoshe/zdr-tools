@@ -6,17 +6,354 @@ on:
     branches:
       - master
       - 'release/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/heads/release/') }}
 
 jobs:
-  build:
-    uses: talbenmoshe/common-infra/.github/workflows/ci.yml@master
+  fork-pr-verify:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint Fix
+        run: pnpm lint:fix
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
+
+  ci:
+    if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
+    runs-on: ubuntu-latest
     permissions:
       checks: write
       contents: read
       id-token: write
       pull-requests: read
-    with:
-      log_level: DEBUG
-      package_registry_link_template: 'https://www.npmjs.com/package/{packageName}'
-    secrets:
-      PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Configure npm auth
+        env:
+          PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+        run: |
+          cat <<EOF > ~/.npmrc
+          @talbenmoshe:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${PACKAGES_TOKEN}
+          always-auth=true
+          EOF
+
+      - name: Enable npm provenance
+        run: echo "NPM_CONFIG_PROVENANCE=true" >> "$GITHUB_ENV"
+
+      - name: GHCR login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PACKAGES_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Security audit
+        run: pnpm audit --audit-level=critical --prod || echo "Vulnerabilities found, continuing"
+
+      - name: Get origin info
+        id: origin-info
+        run: |
+          echo "last_commit_hash=$(git ls-remote --symref origin HEAD | tail -1 | awk '{print $1}')" >> $GITHUB_OUTPUT
+
+      - name: Resolve commit metadata
+        id: commit-info
+        run: |
+          COMMIT_MESSAGE=$(jq -r '.head_commit.message // empty' "$GITHUB_EVENT_PATH")
+          if [ -z "$COMMIT_MESSAGE" ]; then
+            COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          fi
+
+          {
+            echo "commit_message<<EOF"
+            echo "$COMMIT_MESSAGE"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+          COMMIT_URL=$(jq -r '.head_commit.url // empty' "$GITHUB_EVENT_PATH")
+          if [ -z "$COMMIT_URL" ]; then
+            COMMIT_URL="${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          fi
+          echo "commit_url=$COMMIT_URL" >> $GITHUB_OUTPUT
+
+      - name: Resolve lineage
+        id: lineage
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const commitMessage = process.env.COMMIT_MESSAGE ?? '';
+            const commitUrl = process.env.COMMIT_URL ?? '';
+            const isPullRequest = context.eventName === 'pull_request';
+            const payload = context.payload;
+            const isPrimary = context.ref === 'refs/heads/master' || context.ref.startsWith('refs/heads/release/');
+            const result = {
+              actorDisplayName: '',
+              actorEmail: '',
+              commitAuthorLogin: '',
+              commitAuthorName: '',
+              commitAuthorEmail: '',
+              pullRequestNumber: '',
+              pullRequestTitle: '',
+              pullRequestUrl: '',
+              pullRequestSourceBranch: '',
+              pullRequestTargetBranch: '',
+              pullRequestSourceHeadSha: '',
+              pullRequestMergeCommitSha: '',
+              lineageSource: 'direct_push',
+              connectedBranch: '',
+              connectedCommitSha: '',
+              connectedCommitMessage: '',
+              connectedPullRequestNumber: '',
+              connectedPullRequestUrl: ''
+            };
+
+            if (isPullRequest && payload.pull_request) {
+              const pr = payload.pull_request;
+              result.pullRequestNumber = String(pr.number);
+              result.pullRequestTitle = pr.title ?? '';
+              result.pullRequestUrl = pr.html_url ?? '';
+              result.pullRequestSourceBranch = pr.head?.ref ?? '';
+              result.pullRequestTargetBranch = pr.base?.ref ?? '';
+              result.pullRequestSourceHeadSha = pr.head?.sha ?? '';
+              result.pullRequestMergeCommitSha = pr.merge_commit_sha ?? '';
+              result.lineageSource = 'pull_request';
+              result.connectedBranch = pr.head?.ref ?? '';
+              result.connectedCommitSha = pr.head?.sha ?? '';
+              result.connectedCommitMessage = commitMessage;
+              result.connectedPullRequestNumber = String(pr.number);
+              result.connectedPullRequestUrl = pr.html_url ?? '';
+              result.actorDisplayName = pr.user?.name ?? pr.user?.login ?? '';
+            } else if (isPrimary) {
+              try {
+                const response = await github.request('GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls', {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  commit_sha: context.sha,
+                  mediaType: {
+                    previews: ['groot']
+                  }
+                });
+                const [pr] = response.data;
+                if (pr) {
+                  result.pullRequestNumber = String(pr.number);
+                  result.pullRequestTitle = pr.title ?? '';
+                  result.pullRequestUrl = pr.html_url ?? '';
+                  result.pullRequestSourceBranch = pr.head?.ref ?? '';
+                  result.pullRequestTargetBranch = pr.base?.ref ?? '';
+                  result.pullRequestSourceHeadSha = pr.head?.sha ?? '';
+                  result.pullRequestMergeCommitSha = pr.merge_commit_sha ?? '';
+                  result.lineageSource = 'merge_commit';
+                  result.connectedBranch = pr.head?.ref ?? '';
+                  result.connectedCommitSha = pr.head?.sha ?? '';
+                  result.connectedPullRequestNumber = String(pr.number);
+                  result.connectedPullRequestUrl = pr.html_url ?? '';
+                  result.actorDisplayName = pr.user?.name ?? pr.user?.login ?? '';
+
+                  if (pr.head?.sha) {
+                    try {
+                      const commit = await github.rest.repos.getCommit({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        ref: pr.head.sha
+                      });
+                      result.connectedCommitMessage = commit.data.commit.message ?? '';
+                      result.commitAuthorName = commit.data.commit.author?.name ?? '';
+                      result.commitAuthorEmail = commit.data.commit.author?.email ?? '';
+                      result.commitAuthorLogin = commit.data.author?.login ?? '';
+                    } catch {}
+                  }
+                }
+              } catch {}
+            }
+
+            if (!result.commitAuthorName) {
+              result.commitAuthorName = payload.head_commit?.author?.name ?? '';
+            }
+            if (!result.commitAuthorEmail) {
+              result.commitAuthorEmail = payload.head_commit?.author?.email ?? '';
+            }
+            if (!result.commitAuthorLogin) {
+              result.commitAuthorLogin = payload.sender?.login ?? '';
+            }
+            if (!result.actorDisplayName) {
+              result.actorDisplayName = payload.sender?.login ?? '';
+            }
+            result.actorEmail = '';
+
+            core.setOutput('actor_display_name', result.actorDisplayName);
+            core.setOutput('actor_email', result.actorEmail);
+            core.setOutput('commit_author_login', result.commitAuthorLogin);
+            core.setOutput('commit_author_name', result.commitAuthorName);
+            core.setOutput('commit_author_email', result.commitAuthorEmail);
+            core.setOutput('pull_request_number', result.pullRequestNumber);
+            core.setOutput('pull_request_title', result.pullRequestTitle);
+            core.setOutput('pull_request_url', result.pullRequestUrl);
+            core.setOutput('pull_request_source_branch', result.pullRequestSourceBranch);
+            core.setOutput('pull_request_target_branch', result.pullRequestTargetBranch);
+            core.setOutput('pull_request_source_head_sha', result.pullRequestSourceHeadSha);
+            core.setOutput('pull_request_merge_commit_sha', result.pullRequestMergeCommitSha);
+            core.setOutput('lineage_source', result.lineageSource);
+            core.setOutput('connected_branch', result.connectedBranch);
+            core.setOutput('connected_commit_sha', result.connectedCommitSha);
+            core.setOutput('connected_commit_message', result.connectedCommitMessage);
+            core.setOutput('connected_pull_request_number', result.connectedPullRequestNumber);
+            core.setOutput('connected_pull_request_url', result.connectedPullRequestUrl);
+        env:
+          COMMIT_MESSAGE: ${{ steps.commit-info.outputs.commit_message }}
+          COMMIT_URL: ${{ steps.commit-info.outputs.commit_url }}
+
+      - name: Build context
+        run: |
+          echo "ref:                ${{ github.ref }}"
+          echo "ref_name:           ${{ github.ref_name }}"
+          echo "sha:                ${{ github.sha }}"
+          echo "actor:              ${{ github.actor }}"
+          echo "repository_owner:   ${{ github.repository_owner }}"
+          echo "server_url:         ${{ github.server_url }}"
+          echo "repository:         ${{ github.repository }}"
+          echo "run_id:             ${{ github.run_id }}"
+          echo "pr_number:          ${{ steps.lineage.outputs.pull_request_number }}"
+          echo "pr_title:           ${{ steps.lineage.outputs.pull_request_title }}"
+          echo "pr_url:             ${{ steps.lineage.outputs.pull_request_url }}"
+          echo "change_branch:      ${{ steps.lineage.outputs.pull_request_source_branch || github.head_ref || github.ref_name }}"
+          echo "change_target:      ${{ steps.lineage.outputs.pull_request_target_branch || github.base_ref }}"
+          echo "default_branch:     ${{ github.event.repository.default_branch }}"
+          echo "origin_last_hash:   ${{ steps.origin-info.outputs.last_commit_hash }}"
+          echo "commit_message:     ${{ steps.commit-info.outputs.commit_message }}"
+          echo "commit_url:         ${{ steps.commit-info.outputs.commit_url }}"
+          echo "lineage_source:     ${{ steps.lineage.outputs.lineage_source }}"
+          echo "connected_branch:   ${{ steps.lineage.outputs.connected_branch }}"
+          echo "connected_sha:      ${{ steps.lineage.outputs.connected_commit_sha }}"
+
+      - name: Get Zeus webhook token
+        id: zeus-token
+        run: |
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=zeus" | jq -r '.value')
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Build or Publish
+        run: |
+          COMMAND=${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/')) && 'publish' || 'build' }}
+          IS_PRIMARY=${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/') }}
+          WEBHOOK_PATH=${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/')) && 'release' || 'branch' }}
+          REF_TYPE=${{ github.event_name == 'pull_request' && 'pull_request' || 'branch' }}
+          BUILD_TYPE=${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release/')) && 'release' || 'branch' }}
+          pnpm dlx @talbenmoshe/hephaestus-builder@1 $COMMAND \
+            -k talbenmoshe \
+            -b tal-homelab-static-services \
+            -h ghcr.io/${{ github.repository_owner }} \
+            -n ${{ github.ref_name }} \
+            -c https://s3.eu-west-1.amazonaws.com \
+            -o hephaestus-reports \
+            -w https://zeus.lab.talbenmoshe.com/internal-api/builds/v1/$WEBHOOK_PATH \
+            --webhookToken "${{ steps.zeus-token.outputs.token }}" \
+            --commitHash ${{ github.sha }} \
+            --provider github \
+            --buildType "$BUILD_TYPE" \
+            --eventName "${{ github.event_name }}" \
+            --repositoryOwner "${{ github.repository_owner }}" \
+            --repositoryName "${{ github.event.repository.name }}" \
+            --repositoryFullName "${{ github.repository }}" \
+            --repositoryUrl "${{ github.server_url }}/${{ github.repository }}" \
+            --repositoryCloneUrl "${{ github.server_url }}/${{ github.repository }}.git" \
+            --repositoryDefaultBranch "${{ github.event.repository.default_branch }}" \
+            --packageRegistryLinkTemplate "https://www.npmjs.com/package/{packageName}" \
+            --runId "${{ github.run_id }}" \
+            --runAttempt "${{ github.run_attempt }}" \
+            --runUrl "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --workflowName "${{ github.workflow }}" \
+            --refName "${{ github.head_ref || github.ref_name }}" \
+            --refFull "${{ github.ref }}" \
+            --refType "$REF_TYPE" \
+            --isPrimaryBranch "$IS_PRIMARY" \
+            --commitUrl "${{ steps.commit-info.outputs.commit_url }}" \
+            --commitMessage "${{ steps.commit-info.outputs.commit_message }}" \
+            --commitAuthorLogin "${{ steps.lineage.outputs.commit_author_login }}" \
+            --commitAuthorName "${{ steps.lineage.outputs.commit_author_name }}" \
+            --commitAuthorEmail "${{ steps.lineage.outputs.commit_author_email }}" \
+            --actorLogin "${{ github.actor }}" \
+            --actorDisplayName "${{ steps.lineage.outputs.actor_display_name }}" \
+            --actorEmail "${{ steps.lineage.outputs.actor_email }}" \
+            --pullRequestNumber "${{ steps.lineage.outputs.pull_request_number }}" \
+            --pullRequestTitle "${{ steps.lineage.outputs.pull_request_title }}" \
+            --pullRequestUrl "${{ steps.lineage.outputs.pull_request_url }}" \
+            --pullRequestSourceBranch "${{ steps.lineage.outputs.pull_request_source_branch }}" \
+            --pullRequestTargetBranch "${{ steps.lineage.outputs.pull_request_target_branch }}" \
+            --pullRequestSourceHeadSha "${{ steps.lineage.outputs.pull_request_source_head_sha }}" \
+            --pullRequestMergeCommitSha "${{ steps.lineage.outputs.pull_request_merge_commit_sha }}" \
+            --originDefaultBranch "${{ github.event.repository.default_branch }}" \
+            --originHeadSha "${{ steps.origin-info.outputs.last_commit_hash }}" \
+            --lineageSource "${{ steps.lineage.outputs.lineage_source }}" \
+            --connectedBranch "${{ steps.lineage.outputs.connected_branch }}" \
+            --connectedCommitSha "${{ steps.lineage.outputs.connected_commit_sha }}" \
+            --connectedCommitMessage "${{ steps.lineage.outputs.connected_commit_message }}" \
+            --connectedPullRequestNumber "${{ steps.lineage.outputs.connected_pull_request_number }}" \
+            --connectedPullRequestUrl "${{ steps.lineage.outputs.connected_pull_request_url }}"
+        env:
+          DOCKER_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+          LOG_LEVEL: DEBUG
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-west-1
+
+      - name: Upload Hephaestus report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hephaestus-report-${{ github.run_id }}
+          path: hephaestus-reports/hephaestus.html
+          if-no-files-found: ignore
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test Results
+          path: 'packages/*/junit*.xml'
+          reporter: jest-junit
+          fail-on-empty: false
