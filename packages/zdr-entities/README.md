@@ -249,6 +249,33 @@ const allUsers = users.getItems();
 | `itemIdChanged` | `IEventBroker<IItemIdChangedEventData<T>>` | When item ID changes |
 | `collectionChanged` | `IEventBroker` | When collection changes |
 
+### PagedList\<T, TPageToken>
+
+Reactive paging state for short-lived UI views such as infinite scroll, search results, or server-backed lists. Unlike `EntityCollection`, a paged list does not own your domain entities. It tracks loaded page slices and loading state while the model remains the source of truth.
+
+```typescript
+import { CursorPagedList, type IPagedResult } from '@zdr-tools/zdr-entities';
+
+class UserIdsPagedList extends CursorPagedList<string> {
+  constructor(private readonly api: UserApi) {
+    super();
+  }
+
+  protected fetchPageByCursor(cursor: string | null): Promise<IPagedResult<string, string>> {
+    return this.api.listUserIds(cursor);
+  }
+}
+
+const pagedList = new UserIdsPagedList(api);
+await pagedList.loadNextPage();
+
+console.log(pagedList.items.get()); // readonly loaded ids
+console.log(pagedList.hasMore.get()); // true / false
+console.log(pagedList.loadingState.get()); // IDLE / LOADING / ERROR / DONE
+```
+
+Use `CursorPagedList<T>` for opaque cursor APIs and `OffsetPagedList<T>` for offset/limit APIs. Both share the same reactive `IPagedList<T>` contract and can be reset or disposed when the UI view changes.
+
 ### OrderedEntityCollection\<T>
 
 Like EntityCollection but maintains explicit ordering.

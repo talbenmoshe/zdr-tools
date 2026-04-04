@@ -684,6 +684,39 @@ function ValidatedInput({ broker }: { broker: IReadablePropEventBroker<string> }
 }
 ```
 
+### usePagedList
+
+Hook for consuming `PagedList` instances from `@zdr-tools/zdr-entities` without coupling the UI to cursor or offset pagination details.
+
+```typescript
+import { usePagedList, type IPagedList } from '@zdr-tools/zdr-react';
+
+function SearchResults({ pagedList }: { pagedList: IPagedList<string> }) {
+  const {
+    items,
+    isLoading,
+    isError,
+    error,
+    hasMore,
+    loadMore,
+    reset
+  } = usePagedList(pagedList);
+
+  return (
+    <div>
+      <button onClick={reset}>Reset</button>
+
+      {items.map(item => (
+        <div key={item}>{item}</div>
+      ))}
+
+      {isError && <p>{String(error)}</p>}
+      {hasMore && !isLoading && <button onClick={() => void loadMore()}>Load more</button>}
+    </div>
+  );
+}
+```
+
 ## React Components
 
 ### VisibilityPixel

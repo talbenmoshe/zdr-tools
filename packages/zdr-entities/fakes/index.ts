@@ -30,6 +30,12 @@ export {
   type IFakeOrderedEntityCollectionInitialData
 } from './FakeOrderedEntityCollection';
 
+export {
+  FakePagedList,
+  FakePagedListBuilder,
+  type IFakePagedListInitialData
+} from './FakePagedList';
+
 // Property Event Broker Fakes
 export {
   FakeReadablePropEventBroker,

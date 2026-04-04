@@ -7,4 +7,5 @@ export * from './usePropBrokerValue';
 export * from './useIsMobileWidth';
 export * from './usePropEventRefresher';
 export * from './useReadableEventRefresher';
+export * from './usePagedList';
 export * from './useTextField';
