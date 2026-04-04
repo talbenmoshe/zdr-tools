@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node \"packages/ddd-library-monorepo/dist/cjs/start.js\"",
     "build": "pnpm -r --sort run build",
+    "check:types": "pnpm -r --no-sort run check:types",
     "lint": "pnpm -r --no-sort --parallel run lint",
     "lint:fix": "pnpm -r --no-sort --parallel run lint:fix",
     "test": "pnpm -r --no-sort run test"

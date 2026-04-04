@@ -684,6 +684,98 @@ function ValidatedInput({ broker }: { broker: IReadablePropEventBroker<string> }
 }
 ```
 
+### usePagedList
+
+Hook for consuming `PagedList` instances from `@zdr-tools/zdr-entities` without coupling the UI to cursor or offset pagination details.
+
+```typescript
+import { usePagedList, type IPagedList } from '@zdr-tools/zdr-react';
+
+function SearchResults({ pagedList }: { pagedList: IPagedList<string> }) {
+  const {
+    items,
+    isLoading,
+    isError,
+    error,
+    hasMore,
+    loadMore,
+    reset
+  } = usePagedList(pagedList);
+
+  return (
+    <div>
+      <button onClick={reset}>Reset</button>
+
+      {items.map(item => (
+        <div key={item}>{item}</div>
+      ))}
+
+      {isError && <p>{String(error)}</p>}
+      {hasMore && !isLoading && <button onClick={() => void loadMore()}>Load more</button>}
+    </div>
+  );
+}
+```
+
+**Returns**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `items` | `readonly T[]` | Current loaded items |
+| `isLoading` | `boolean` | `true` while a page request is in flight |
+| `isError` | `boolean` | `true` when the latest load failed |
+| `error` | `unknown \| undefined` | Last loading error |
+| `hasMore` | `boolean` | Whether another page can be loaded |
+| `loadMore` | `() => Promise<void>` | Loads the next page |
+| `reset` | `() => void` | Clears the paged list state |
+
+**Important Behavior**
+
+- `usePagedList()` is transport-agnostic: it works with both `CursorPagedList` and `OffsetPagedList`.
+- The hook does not auto-load on mount. That keeps ownership explicit and avoids hidden requests.
+- If you want auto-loading, call `loadMore()` from your component effect.
+
+**Complete Example**
+
+```typescript
+import { useEffect } from 'react';
+import { usePagedList } from '@zdr-tools/zdr-react';
+
+function RepositoriesPane({ pagedList }: { pagedList: IPagedList<string> }) {
+  const {
+    items,
+    isLoading,
+    isError,
+    error,
+    hasMore,
+    loadMore
+  } = usePagedList(pagedList);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      void loadMore();
+    }
+  }, [items.length, loadMore]);
+
+  return (
+    <section>
+      {items.map(repoName => (
+        <div key={repoName}>{repoName}</div>
+      ))}
+
+      {isError && <p>Failed to load: {String(error)}</p>}
+      {isLoading && <p>Loading...</p>}
+
+      {hasMore && !isLoading && (
+        <button onClick={() => void loadMore()}>
+          Load more
+        </button>
+      )}
+    </section>
+  );
+}
+```
+
 ## React Components
 
 ### VisibilityPixel
