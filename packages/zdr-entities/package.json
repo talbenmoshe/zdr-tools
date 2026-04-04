@@ -52,6 +52,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc && tsc-esm-fix dist",
+    "check:types": "tsc --noEmit",
     "test": "vitest --run",
     "test:watch": "vitest",
     "lint": "eslint . --ext ts,js",

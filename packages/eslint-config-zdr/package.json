@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": ":",
+    "check:types": ":",
     "test": ":",
     "test:watch": ":",
     "lint": ":",

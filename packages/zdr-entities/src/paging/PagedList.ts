@@ -1,6 +1,5 @@
 import { AdvancedEventEmitter } from '@zdr-tools/zdr-native-tools';
 import {
-  LoadingState,
   LoadingStateBroker,
   PropEventBroker
 } from '../EventBrokers';
