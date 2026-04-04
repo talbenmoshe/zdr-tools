@@ -124,6 +124,34 @@ john.applyBirthday();
 unregister();
 ```
 
+## Paging Example
+
+ZDR also supports reactive paged view state for server-backed lists:
+
+```typescript
+import { CursorPagedList, type IPagedResult } from '@zdr-tools/zdr-entities';
+
+class RecentItemIdsPagedList extends CursorPagedList<string> {
+  constructor(private readonly api: ApiClient) {
+    super();
+  }
+
+  protected fetchPageByCursor(cursor: string | null): Promise<IPagedResult<string, string>> {
+    return this.api.listRecentItemIds(cursor);
+  }
+}
+
+const pagedList = new RecentItemIdsPagedList(apiClient);
+
+await pagedList.loadNextPage();
+
+console.log(pagedList.items.get());
+console.log(pagedList.hasMore.get());
+console.log(pagedList.loadingState.get());
+```
+
+In React, consume the same instance with `usePagedList()` from [`zdr-react`](./packages/zdr-react/README.md).
+
 ## Architecture
 
 The ZDR framework follows a layered architecture:

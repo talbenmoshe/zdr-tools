@@ -276,6 +276,70 @@ console.log(pagedList.loadingState.get()); // IDLE / LOADING / ERROR / DONE
 
 Use `CursorPagedList<T>` for opaque cursor APIs and `OffsetPagedList<T>` for offset/limit APIs. Both share the same reactive `IPagedList<T>` contract and can be reset or disposed when the UI view changes.
 
+**Common Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `items` | `IReadablePropEventBroker<readonly T[]>` | Reactive list of loaded items |
+| `loadingState` | `IReadablePropEventBroker<LoadingState>` | Current load state |
+| `hasMore` | `IReadablePropEventBroker<boolean>` | Whether another page can be loaded |
+| `error` | `IReadablePropEventBroker<unknown \| undefined>` | Last loading error |
+
+**Common Methods:**
+
+| Method | Parameters | Return Type | Description |
+|--------|------------|-------------|-------------|
+| `getItems` | - | `readonly T[]` | Get a readonly snapshot of loaded items |
+| `loadNextPage` | - | `Promise<void>` | Load the next page if possible |
+| `reset` | - | `void` | Clear all loaded state and restart from the first page |
+| `dispose` | - | `void` | Mark the instance as inactive and ignore late async results |
+
+**Offset Paging Example**
+
+```typescript
+import {
+  OffsetPagedList,
+  type IOffsetPageResult,
+  type IOffsetPageToken
+} from '@zdr-tools/zdr-entities';
+
+class AuditLogPagedList extends OffsetPagedList<string> {
+  constructor(private readonly api: AuditApi) {
+    super(50);
+  }
+
+  protected fetchPageByOffset(page: IOffsetPageToken): Promise<IOffsetPageResult<string>> {
+    return this.api.listAuditIds(page.offset, page.limit);
+  }
+}
+```
+
+**Usage Notes**
+
+- `PagedList` is designed for view state, not as a replacement for `EntityCollection`.
+- `reset()` is useful when the UI query or filter changes.
+- `dispose()` is useful when the owning view is torn down and you want late async responses ignored.
+- The base class guards against stale async results after `reset()` or `dispose()`, but transport-specific aborting remains the consumer's responsibility.
+
+**Practical Example: paging ids while the model owns entities**
+
+```typescript
+class UserDirectory {
+  private readonly users = new Map<string, User>();
+
+  getUserById(id: string): User | undefined {
+    return this.users.get(id);
+  }
+}
+
+const pagedUserIds = new UserIdsPagedList(api);
+await pagedUserIds.loadNextPage();
+
+const visibleUsers = pagedUserIds.getItems()
+  .map(id => directory.getUserById(id))
+  .filter((user): user is User => user !== undefined);
+```
+
 ### OrderedEntityCollection\<T>
 
 Like EntityCollection but maintains explicit ordering.
