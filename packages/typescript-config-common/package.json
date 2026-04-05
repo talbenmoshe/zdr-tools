@@ -22,10 +22,6 @@
   "files": [
     "tsconfig.json"
   ],
-  "talbenmoshe": {
-    "artifactId": "com.talbenmoshe.typescript-config-common",
-    "targets": []
-  },
   "scripts": {
     "build": "echo 'No build needed for typescript-config-common'",
     "check:types": "echo 'No type checking for typescript-config-common'",
@@ -33,5 +29,9 @@
     "test:watch": "echo 'No tests for typescript-config-common'",
     "lint": "echo 'No linting for typescript-config-common'",
     "lint:fix": "echo 'No linting for typescript-config-common'"
+  },
+  "talbenmoshe": {
+    "artifactId": "com.talbenmoshe.typescript-config-common",
+    "targets": []
   }
 }
