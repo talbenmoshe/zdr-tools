@@ -20,15 +20,22 @@ export type MockedFunction<T extends (...args: any[]) => any> = T & {
 // Using any here because the exact return types are different between vi.fn and jest.fn
 export type MockCreator = <T extends (...args: any[]) => any>(implementation?: T) => any;
 
-// Global mock creator storage
-let globalMockCreator: MockCreator | null = null;
+const mockCreatorSymbol = Symbol.for('@zdr-tools/zdr-testing-tools.mockCreator');
+
+type MockingGlobalStore = typeof globalThis & {
+  [mockCreatorSymbol]?: MockCreator | null;
+};
+
+function getGlobalStore(): MockingGlobalStore {
+  return globalThis as MockingGlobalStore;
+}
 
 /**
  * Sets the global mock creation function (vi.fn or jest.fn)
  * This should be called once during test setup
  */
 export function setMockingFunction(mockCreator: MockCreator): void {
-  globalMockCreator = mockCreator;
+  getGlobalStore()[mockCreatorSymbol] = mockCreator;
 }
 
 /**
@@ -39,6 +46,8 @@ export function setMockingFunction(mockCreator: MockCreator): void {
 export function getMockingFunction<T extends (...args: any[]) => any>(
   implementation?: T
 ): any {
+  const globalMockCreator = getGlobalStore()[mockCreatorSymbol];
+
   if (!globalMockCreator) {
     throw new Error(
       'Mock creator not configured. Install @zdr-tools/zdr-jest-setup or @zdr-tools/zdr-vitest-setup to fix this. See: https://github.com/talbenmoshe/zdr-tools/tree/master/packages/zdr-testing-tools#readme'
@@ -52,5 +61,5 @@ export function getMockingFunction<T extends (...args: any[]) => any>(
  * Resets the global mock creator (mainly for testing)
  */
 export function resetMockingFunction(): void {
-  globalMockCreator = null;
+  getGlobalStore()[mockCreatorSymbol] = null;
 }
