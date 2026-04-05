@@ -26,7 +26,7 @@
     "type": "git",
     "url": "https://github.com/talbenmoshe/zdr-tools"
   },
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@9.15.9",
   "devDependencies": {
     "@zdr-tools/eslint-config-zdr": "workspace:*",
     "eslint": "^9.27.0"
