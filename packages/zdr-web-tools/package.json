@@ -62,6 +62,6 @@
     "@zdr-tools/eslint-config-zdr": "workspace:*",
     "@zdr-tools/typescript-config-common": "workspace:*",
     "vitest": "3.1.4",
-    "typescript": "~5.8.3"
+    "typescript": "~6.0.0"
   }
 }
