@@ -42,7 +42,7 @@
     "@stylistic/eslint-plugin": "^4.4.0",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
-    "@vitest/eslint-plugin": "^1.2.1",
+    "@vitest/eslint-plugin": "^1.6.19",
     "eslint": "^9.27.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -53,6 +53,7 @@
     "semver": "^7.7.2"
   },
   "devDependencies": {
-    "@types/node": "^22.15.27"
+    "@types/node": "^22.15.27",
+    "vite": "8.0.16"
   }
 }

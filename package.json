@@ -29,6 +29,7 @@
   "packageManager": "pnpm@9.15.9",
   "devDependencies": {
     "@zdr-tools/eslint-config-zdr": "workspace:*",
-    "eslint": "^9.27.0"
+    "eslint": "^9.27.0",
+    "vite": "8.0.16"
   }
 }

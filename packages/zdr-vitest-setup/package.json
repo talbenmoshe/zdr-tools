@@ -45,13 +45,14 @@
     "tslib": "^2.8.1"
   },
   "peerDependencies": {
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0 || ^4.0.0"
   },
   "devDependencies": {
     "tsc-esm-fix": "^3.1.2",
     "@zdr-tools/eslint-config-zdr": "workspace:*",
     "@zdr-tools/typescript-config-common": "workspace:*",
     "typescript": "~6.0.0",
-    "vitest": "3.1.4"
+    "vite": "8.0.16",
+    "vitest": "4.1.8"
   }
 }

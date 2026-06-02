@@ -54,6 +54,6 @@
     "@zdr-tools/eslint-config-zdr": "workspace:*",
     "@zdr-tools/typescript-config-common": "workspace:*",
     "typescript": "~6.0.0",
-    "ts-jest": "^29.2.5"
+    "ts-jest": "^29.4.11"
   }
 }
