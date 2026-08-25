@@ -292,7 +292,7 @@ jobs:
             -n ${{ github.ref_name }} \
             -c https://s3.eu-west-1.amazonaws.com \
             -o hephaestus-reports \
-            -w https://zeus.lab.talbenmoshe.com/internal-api/builds/v1/$WEBHOOK_PATH \
+            -w https://zeus-builds.talbenmoshe.com/internal-api/builds/v1/$WEBHOOK_PATH \
             --webhookToken "${{ steps.zeus-token.outputs.token }}" \
             --commitHash ${{ github.sha }} \
             --provider github \
